@@ -1,7 +1,7 @@
 pdnslog("pdns-recursor Lua script starting!", pdns.loglevels.Info)
 
 -- user config --
-hazard_response_a = "127.0.0.1"
+hazard_response_a = "145.237.235.240"
 cert_hole_response_a = {"195.187.6.33","195.187.6.34","195.187.6.35"}
 -- user config --
 

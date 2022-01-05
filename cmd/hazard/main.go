@@ -41,6 +41,8 @@ type registry struct {
 }
 
 func fetchBody(url string) ([]byte, error) {
+	log.Printf("Fetch body from: %s", url)
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
 	}
@@ -159,6 +161,8 @@ func (s *server) start(h http.Handler) error {
 
 	addr = fmt.Sprintf("%s:%d", s.address, s.port)
 
+	log.Printf("HTTP Server starting at: %s", addr)
+
 	listener, err = net.Listen("tcp", addr)
 
 	if err != nil {
@@ -202,12 +206,16 @@ func (s *server) loadRegistry(body []byte, deleteOld bool) {
 }
 
 func (s *server) pull() {
+	log.Printf("Starting PULL request")
+
 	if body, err := fetchBody("https://hazard.mf.gov.pl/api/Register"); err == nil {
 		s.loadRegistry(body, true)
 	}
 }
 
 func (s *server) handle(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s %s %s %d", r.RemoteAddr, r.Method, r.URL, r.Proto, r.ContentLength)
+
 	if r.Method == "POST" {
 		w.Header().Set("Rsh-Push", "accepted")
 
@@ -255,7 +263,7 @@ func main() {
 
 	lib.ConfigInit(cfgDir)
 	if !lib.ConfigLoad(&srv.cfg) {
-		os.Exit(1)
+		log.Fatalf("Error loading config")
 	}
 
 	signalChan := make(chan os.Signal, 1)

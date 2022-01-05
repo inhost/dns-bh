@@ -40,6 +40,8 @@ func ConnectDb(host string, port int, user string, password string, name string,
 		sslMode = "disable"
 	}
 
+	log.Printf("Connecting to database: %s", host)
+
 	dbString := fmt.Sprintf(
 		"host='%s' port=%d user='%s' password='%s' dbname='%s' sslmode='%s'",
 		host, port, user, password, name, sslMode)

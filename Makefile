@@ -5,7 +5,7 @@ BUILD_DATE		= $(shell date +%Y%m%d%H%M)
 
 BUILD_DIR		= build
 
-# LDFLAGS			:= -extldflags '-static'
+LDFLAGS			:= -extldflags '-static'
 LDFLAGS			+= -X 'main.author=${AUTHOR}'
 LDFLAGS 		+= -X 'main.version=${BUILD_VERSION}'
 LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
@@ -16,6 +16,9 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 
 	mkdir -p ${BUILD_DIR}/dns-bh_node/etc ${BUILD_DIR}/dns-bh_node/bin
 	cp config.yml ${BUILD_DIR}/dns-bh_node/etc
+
+	mkdir -p ${BUILD_DIR}/dns-bh_updater/etc ${BUILD_DIR}/dns-bh_updater/bin
+	cp config.yml ${BUILD_DIR}/dns-bh_updater/etc
 
 	cp -r contrib ${BUILD_DIR}/
 
@@ -44,7 +47,12 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
 	-o ${BUILD_DIR}/dns-bh_master/bin/cert_hole cmd/cert_hole/main.go
 
-build: .prepare .export-file .hazard .malware .acl .cert_hole
+.update-nodes: cmd/update-nodes/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
+	-o ${BUILD_DIR}/dns-bh_updater/bin/update-nodes cmd/update-nodes/main.go
+
+build: .prepare .export-file .hazard .malware .acl .cert_hole .update-nodes
 
 tar-file: build
 	tar czf dns-bh-${BUILD_VERSION}-bin.tar.gz -C build .

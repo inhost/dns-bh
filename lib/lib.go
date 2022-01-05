@@ -151,3 +151,31 @@ func ReportChanges(cfg *Config, domains []string, subject string) {
 		log.Printf("SMTP: %v", err)
 	}
 }
+
+func ReportExport(cfg *Config, subject string, body string) {
+	log.Printf("%s: %s", subject, body)
+
+	mailBody := fmt.Sprintf("To: %s\n", cfg.SMTP.Recipient) +
+		"Subject: [DNS-BH] export report\n" +
+		"\n" +
+		fmt.Sprintf("%s:\n%s\n", subject, body)
+
+	auth := smtp.PlainAuth(
+		"",
+		cfg.SMTP.User,
+		cfg.SMTP.Password,
+		cfg.SMTP.Host,
+	)
+
+	err := smtp.SendMail(
+		fmt.Sprintf("%s:%d", cfg.SMTP.Host, cfg.SMTP.Port),
+		auth,
+		cfg.SMTP.Sender,
+		[]string{cfg.SMTP.Recipient},
+		[]byte(mailBody),
+	)
+
+	if err != nil {
+		log.Printf("SMTP: %v", err)
+	}
+}

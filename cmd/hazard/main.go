@@ -15,6 +15,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/epix-dev/dns-bh/lib"
 
@@ -270,6 +271,14 @@ func main() {
 	if err := srv.start(nil); err != nil {
 		log.Fatalf("Error on server.start: %s", err)
 	}
+
+	ticker := time.NewTicker(time.Hour * 1)
+	go func() {
+		for t := range ticker.C {
+			log.Print("Ticker fired at", t)
+			srv.pull()
+		}
+	}()
 
 	srv.pull()
 

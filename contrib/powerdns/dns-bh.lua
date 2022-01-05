@@ -2,6 +2,7 @@ pdnslog("pdns-recursor Lua script starting!", pdns.loglevels.Info)
 
 -- user config --
 hazard_response_a = "127.0.0.1"
+cert_hole_response_a = {"195.187.6.33","195.187.6.34","195.187.6.35"}
 -- user config --
 
 hazard = newDS()
@@ -55,9 +56,9 @@ function preresolve(dq)
                 dq.qname:toString()
             )
             pdnslog(log_entry, pdns.loglevels.Info)
-            dq:addAnswer(pdns.A, "195.187.6.33")
-            dq:addAnswer(pdns.A, "195.187.6.34")
-            dq:addAnswer(pdns.A, "195.187.6.35")
+            for i, a in ipairs(cert_hole_response_a) do
+                dq:addAnswer(pdns.A, a)
+             end
             return true
         else
             log_entry =

@@ -1,3 +1,8 @@
+﻿DROP TABLE hazard;
+DROP TABLE malware;
+DROP TABLE whitelist;
+DROP TABLE cert_hole;
+
 CREATE TABLE hazard (
     id SERIAL,
     entry_pos INT NOT NULL,
@@ -9,6 +14,8 @@ CREATE TABLE hazard (
     deleted_at TIMESTAMP,
     PRIMARY KEY(id)
 );
+
+ALTER TABLE hazard OWNER TO "dnsbh-owner";
 
 CREATE UNIQUE INDEX idx_hazard_1 ON hazard(entry_pos) WHERE deleted_at IS NULL;
 
@@ -23,6 +30,8 @@ CREATE TABLE malware (
     PRIMARY KEY(id)
 );
 
+ALTER TABLE malware OWNER TO "dnsbh-owner";
+
 CREATE UNIQUE INDEX idx_malware_1 ON malware(domain,reason,source) WHERE deleted_at IS NULL;
 
 CREATE TABLE whitelist (
@@ -33,6 +42,8 @@ CREATE TABLE whitelist (
     deleted_at TIMESTAMP,
     PRIMARY KEY(id)
 );
+
+ALTER TABLE whitelist OWNER TO "dnsbh-owner";
 
 CREATE UNIQUE INDEX idx_whitelist_1 ON whitelist(domain) WHERE deleted_at IS NULL;
 
@@ -49,3 +60,5 @@ CREATE TABLE cert_hole (
 );
 
 CREATE UNIQUE INDEX idx_cert_hole_1 ON cert_hole(domain) WHERE deleted_at IS NULL;
+
+ALTER TABLE cert_hole OWNER TO "dnsbh-owner";
